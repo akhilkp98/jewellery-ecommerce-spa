@@ -1,13 +1,8 @@
-<div
-  class="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50"
-  (click)="onOverlayClick($event)"
->
+<div class="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50" (click)="onOverlayClick($event)">
 
   <!-- Modal -->
-  <div
-    class="bg-white rounded-lg shadow-2xl max-w-3xl w-full max-h-[90vh] overflow-y-auto"
-    (click)="$event.stopPropagation()"
-  >
+  <div class="bg-white rounded-lg shadow-2xl max-w-3xl w-full max-h-[90vh] overflow-y-auto"
+    (click)="$event.stopPropagation()">
 
     <!-- Header -->
     <div class="bg-[#0B1C2C] text-white px-6 py-4 flex items-center justify-between sticky top-0">
@@ -26,7 +21,7 @@
       <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
 
         <!-- Name -->
-        <div class="md:col-span-2">
+        <div>
           <label class="block text-sm mb-2">Product Name *</label>
           <input type="text" name="name" [(ngModel)]="formData.name" required
             class="w-full px-4 py-2 border rounded-md focus:ring-2 focus:ring-[#D4AF37]">
@@ -56,25 +51,62 @@
           </select>
         </div>
 
-        <!-- Price -->
+        <!-- Weight -->
         <div>
-          <label class="block text-sm mb-2">Price *</label>
-          <input type="number" name="price" [(ngModel)]="formData.price" required
+          <label class="block text-sm mb-2">Weight (g) *</label>
+          <input type="number" name="weight" [(ngModel)]="formData.weight" required
             class="w-full px-4 py-2 border rounded-md focus:ring-2 focus:ring-[#D4AF37]">
         </div>
 
-        <!-- Image -->
+        <!-- Current Metal Price -->
         <div>
+          <label class="block text-sm mb-2">Current metal price (per g) *</label>
+          <input type="number" name="currentMetalPrice" [(ngModel)]="formData.currentMetalPrice" required
+            class="w-full px-4 py-2 border rounded-md focus:ring-2 focus:ring-[#D4AF37]">
+        </div>
+
+        <!-- Making charges -->
+        <div>
+          <label class="block text-sm mb-2">Making charges *</label>
+          <input type="number" name="makingCharges" [(ngModel)]="formData.makingCharges" required
+            class="w-full px-4 py-2 border rounded-md focus:ring-2 focus:ring-[#D4AF37]">
+        </div>
+
+        <!-- Shipping charges -->
+        <div>
+          <label class="block text-sm mb-2">Shipping charges *</label>
+          <input type="number" name="shippingCharges" [(ngModel)]="formData.shippingCharges" required
+            class="w-full px-4 py-2 border rounded-md focus:ring-2 focus:ring-[#D4AF37]">
+        </div>
+
+        <!-- Tax -->
+        <div>
+          <label class="block text-sm mb-2">Tax Information *</label>
+          <select name="tax" [(ngModel)]="formData.tax" required
+            class="w-full px-4 py-2 border rounded-md focus:ring-2 focus:ring-[#D4AF37]">
+            <option value="GST (5%)">GST (5%)</option>
+          </select>
+        </div>
+
+        <!-- Image -->
+        <div class="md:col-span-2">
           <label class="block text-sm mb-2">Image URL *</label>
           <input type="url" name="image" [(ngModel)]="formData.image" required
             class="w-full px-4 py-2 border rounded-md focus:ring-2 focus:ring-[#D4AF37]">
         </div>
 
-        <!-- Description -->
-        <div class="md:col-span-2">
-          <label class="block text-sm mb-2">Description</label>
-          <textarea name="description" [(ngModel)]="formData.description" rows="4"
-            class="w-full px-4 py-2 border rounded-md focus:ring-2 focus:ring-[#D4AF37]"></textarea>
+        <!-- Availability AND Price Calculation Display -->
+        <div class="md:col-span-2 flex items-center justify-between bg-gray-50 p-4 rounded-lg border">
+          <label class="relative inline-flex items-center cursor-pointer">
+            <input type="checkbox" name="availability" [(ngModel)]="formData.availability" class="sr-only peer">
+            <div class="w-11 h-6 bg-gray-300 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#D4AF37]"></div>
+            <span class="ml-3 text-sm font-medium text-gray-700">Available</span>
+          </label>
+
+          <div class="text-right flex items-center gap-3">
+            <span class="text-sm font-medium text-gray-500 uppercase tracking-widest">Final Price</span>
+            <span class="text-2xl font-bold text-[#D4AF37]">AED {{ calculatedPrice | number:'1.0-0' }}</span>
+          </div>
         </div>
 
       </div>
@@ -82,13 +114,11 @@
       <!-- Actions -->
       <div class="flex gap-4 justify-end pt-4">
 
-        <button type="button" (click)="onCancel()"
-          class="px-6 py-2 border rounded-md">
+        <button type="button" (click)="onCancel()" class="px-6 py-2 border rounded-md">
           Cancel
         </button>
 
-        <button type="submit"
-          class="flex items-center gap-2 px-6 py-2 bg-[#D4AF37] text-[#0B1C2C] rounded-md">
+        <button type="submit" class="flex items-center gap-2 px-6 py-2 bg-[#D4AF37] text-[#0B1C2C] rounded-md">
 
           <lucide-icon *ngIf="product" [img]="Save" class="w-4 h-4"></lucide-icon>
           <lucide-icon *ngIf="!product" [img]="Plus" class="w-4 h-4"></lucide-icon>

@@ -29,19 +29,40 @@
         {{ product.name }}
       </h3>
 
-      <p class="text-sm text-[#6b6b6b] capitalize">
-        {{ product.metalType.replace('-', ' ') }}
-      </p>
+      <div class="flex items-center justify-between">
+        <p class="text-sm text-[#6b6b6b] capitalize">
+          {{ product.metalType.replace('-', ' ') }}
+        </p>
+
+        <span *ngIf="product.availability !== false" class="text-sm text-green-600 font-medium tracking-wide">
+          Available
+        </span>
+        <span *ngIf="product.availability === false" class="text-sm text-red-600 font-medium tracking-wide">
+          Unavailable
+        </span>
+      </div>
+
+      <!-- Pricing Breakdown Details -->
+      <div class="mt-3 text-[11px] text-gray-500 space-y-1.5 border-t border-gray-100 pt-2">
+        <div class="flex justify-between">
+          <span>Weight: <span class="font-medium text-gray-700">{{ product.weight || 0 }}g</span></span>
+          <span>Rate: <span class="font-medium text-gray-700">AED {{ product.currentMetalPrice || 0 }}/g</span></span>
+        </div>
+        <div class="flex justify-between">
+          <span>Making: <span class="font-medium text-gray-700">AED {{ product.makingCharges || 0 }}</span></span>
+          <span>Shipping: <span class="font-medium text-gray-700">AED {{ product.shippingCharges || 0 }}</span></span>
+        </div>
+      </div>
     </div>
 
-    <!-- Price + Category -->
+    <!-- Price and Category -->
     <div class="flex items-center justify-between mb-4">
 
       <span class="text-xl text-[#D4AF37]">
-        ₹{{ product.price | number }}
+        AED {{ product.price | number }}
       </span>
 
-      <span class="text-xs text-[#6b6b6b] uppercase tracking-wide bg-[#F9F9F9] px-3 py-1 rounded-full">
+      <span class="text-[11px] text-[#6b6b6b] uppercase tracking-wide bg-[#F9F9F9] px-3 py-1 rounded-full border border-gray-100">
         {{ product.category }}
       </span>
 

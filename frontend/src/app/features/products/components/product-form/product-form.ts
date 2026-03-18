@@ -6,7 +6,7 @@ import { LucideAngularModule, X, Save, Plus } from 'lucide-angular';
 @Component({
   selector: 'app-product-form',
   standalone: true,
-  imports: [FormsModule, LucideAngularModule,CommonModule],
+  imports: [FormsModule, LucideAngularModule, CommonModule],
   templateUrl: './product-form.html',
   styleUrl: './product-form.css',
 })
@@ -24,10 +24,26 @@ export class ProductForm {
     name: '',
     category: 'rings',
     metalType: 'gold',
-    price: '',
+    weight: '',
+    currentMetalPrice: '',
+    makingCharges: '',
+    shippingCharges: '',
     image: '',
-    description: ''
+    availability: true,
+    tax: 'GST (5%)'
   };
+
+  get calculatedPrice(): number {
+    const weight = Number(this.formData.weight) || 0;
+    const metalPrice = Number(this.formData.currentMetalPrice) || 0;
+    const makingCharges = Number(this.formData.makingCharges) || 0;
+    const shippingCharges = Number(this.formData.shippingCharges) || 0;
+    
+    const basePrice = (weight * metalPrice) + makingCharges + shippingCharges;
+    const taxMultiplier = this.formData.tax === 'GST (5%)' ? 0.05 : 0;
+    
+    return basePrice + (basePrice * taxMultiplier);
+  }
 
   ngOnChanges() {
     if (this.product) {
@@ -35,9 +51,13 @@ export class ProductForm {
         name: this.product.name,
         category: this.product.category,
         metalType: this.product.metalType,
-        price: this.product.price,
+        weight: this.product.weight || '',
+        currentMetalPrice: this.product.currentMetalPrice || '',
+        makingCharges: this.product.makingCharges,
+        shippingCharges: this.product.shippingCharges || '',
         image: this.product.image,
-        description: this.product.description || ''
+        availability: this.product.availability !== undefined ? this.product.availability : true,
+        tax: this.product.tax || 'GST (5%)'
       };
     }
   }
@@ -46,7 +66,11 @@ export class ProductForm {
     if (form.valid) {
       const data = {
         ...this.formData,
-        price: parseFloat(this.formData.price)
+        price: this.calculatedPrice,
+        weight: parseFloat(this.formData.weight) || 0,
+        currentMetalPrice: parseFloat(this.formData.currentMetalPrice) || 0,
+        makingCharges: parseFloat(this.formData.makingCharges) || 0,
+        shippingCharges: parseFloat(this.formData.shippingCharges) || 0
       };
       this.submitForm.emit(data);
     }

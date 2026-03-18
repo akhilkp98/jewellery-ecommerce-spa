@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { LucideAngularModule, SlidersHorizontal } from 'lucide-angular';
+import { LucideAngularModule, SlidersHorizontal, Search } from 'lucide-angular';
 import { ProductForm } from '../../components/product-form/product-form';
 import { Product } from '../../components/product/product';
 @Component({
@@ -14,6 +14,7 @@ import { Product } from '../../components/product/product';
 export class CollectionPage {
 
   readonly SlidersHorizontal = SlidersHorizontal;
+  readonly Search = Search;
   showModal = false;
   selectedProduct: any = null;
 
@@ -30,7 +31,13 @@ export class CollectionPage {
       name: 'Diamond Ring',
       category: 'rings',
       metalType: 'gold',
-      price: 25000,
+      weight: 3,
+      currentMetalPrice: 7500,
+      makingCharges: 3500,
+      shippingCharges: 100,
+      availability: true,
+      tax: 'GST (5%)',
+      price: 27405,
       image: 'https://images.unsplash.com/photo-1605100804763-247f67b3557e',
     },
     {
@@ -38,7 +45,13 @@ export class CollectionPage {
       name: 'Silver Necklace',
       category: 'necklaces',
       metalType: 'silver',
-      price: 12000,
+      weight: 15,
+      currentMetalPrice: 900,
+      makingCharges: 2500,
+      shippingCharges: 150,
+      availability: true,
+      tax: 'GST (5%)',
+      price: 16957,
       image: 'https://images.unsplash.com/photo-1617038220319-276d3cfab638',
     },
     {
@@ -46,44 +59,30 @@ export class CollectionPage {
       name: 'Gold Bracelet',
       category: 'bracelets',
       metalType: 'gold',
-      price: 18000,
+      weight: 8,
+      currentMetalPrice: 7500,
+      makingCharges: 4000,
+      shippingCharges: 100,
+      availability: false,
+      tax: 'GST (5%)',
+      price: 67305,
       image: 'https://images.unsplash.com/photo-1611652022419-a9419f74343d',
     }
   ];
 
+  filteredProducts = [...this.products];
+
   activeSort = '';
 
-  get sortOption() {
-    return this.activeSort;
-  }
-
-  set sortOption(value: string) {
-    this.activeSort = value;
-  }
+  get sortOption() { return this.activeSort; }
+  set sortOption(value: string) { this.activeSort = value; }
 
   sortBy(option: string) {
     this.activeSort = option;
-    switch (option) {
-
-      case 'priceLow':
-        this.products.sort((a: any, b: any) => a.price - b.price);
-        break;
-
-      case 'priceHigh':
-        this.products.sort((a: any, b: any) => b.price - a.price);
-        break;
-
-      case 'nameAsc':
-        this.products.sort((a: any, b: any) => a.name.localeCompare(b.name));
-        break;
-
-      case 'nameDesc':
-        this.products.sort((a: any, b: any) => b.name.localeCompare(a.name));
-        break;
-
-      default:
-        break;
-    }
+    if (option === 'priceLow') this.filteredProducts.sort((a: any, b: any) => a.price - b.price);
+    else if (option === 'priceHigh') this.filteredProducts.sort((a: any, b: any) => b.price - a.price);
+    else if (option === 'nameAsc') this.filteredProducts.sort((a: any, b: any) => a.name.localeCompare(b.name));
+    else if (option === 'nameDesc') this.filteredProducts.sort((a: any, b: any) => b.name.localeCompare(a.name));
   }
 
   openAddProduct() {
@@ -106,23 +105,34 @@ export class CollectionPage {
         { id: Date.now().toString(), ...product }
       ];
     }
+    this.onApply();
     this.showModal = false;
     this.selectedProduct = null;
   }
 
   onApply() {
-    console.log('Filters:', this.filters);
+    this.activeSort = '';
+
+    this.filteredProducts = this.products.filter(p => {
+      const cMatch = this.filters.category === 'all' || p.category === this.filters.category;
+      const mMatch = this.filters.metalType === 'all' || p.metalType === this.filters.metalType;
+      
+      let pMatch = true;
+      if (this.filters.priceRange !== 'all') {
+        const [min, max] = this.filters.priceRange.split('-').map(n => parseInt(n, 10));
+        pMatch = p.price >= min && p.price <= max;
+      }
+      return cMatch && mMatch && pMatch;
+    });
   }
 
   onReset() {
-    this.filters = {
-      category: 'all',
-      metalType: 'all',
-      priceRange: 'all'
-    };
+    this.filters = { category: 'all', metalType: 'all', priceRange: 'all' };
+    this.onApply();
   }
 
   onDelete(id: string) {
-    console.log('Delete clicked:', id);
+    this.products = this.products.filter(p => p.id !== id);
+    this.onApply();
   }
 }
