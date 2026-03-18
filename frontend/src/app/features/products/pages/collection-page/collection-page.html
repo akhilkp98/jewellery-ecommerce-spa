@@ -1,0 +1,187 @@
+<!-- Header Section -->
+<div class="bg-gray-100">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+
+        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+
+            <!-- Left -->
+            <div>
+                <h1 class="text-2xl sm:text-3xl font-semibold text-[#0B1C2C]">
+                    Our Collection
+                </h1>
+                <p class="text-sm sm:text-base text-gray-600 mt-1">
+                    Showing 6 of 6 products
+                </p>
+            </div>
+
+            <!-- Right -->
+            <div class="flex justify-start sm:justify-end">
+                <button (click)="openAddProduct()"
+                    class="flex items-center gap-2 bg-[#D4AF37] text-[#0B1C2C] px-4 sm:px-5 py-2.5 rounded-md shadow hover:bg-[#C5A028] transition-all">
+                    <span class="text-lg">+</span>
+                    <span class="font-medium">Add Product</span>
+                </button>
+            </div>
+
+        </div>
+
+    </div>
+</div>
+
+<!-- Filter Section -->
+<div class="bg-gray-100">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+
+        <div class="bg-white shadow-sm border border-gray-200 rounded-lg p-4 sm:p-6">
+
+            <!-- Header -->
+            <div class="flex items-center justify-between mb-4">
+                <div class="flex items-center gap-2">
+                    <lucide-icon [img]="SlidersHorizontal" class="w-5 h-5 text-[#4A4A4A]"></lucide-icon>
+                    <h3 class="text-lg text-[#2c2c2c] font-medium">Filter Products</h3>
+                </div>
+
+                <button (click)="onReset()" class="text-sm text-gray-500 hover:text-[#D4AF37] transition">
+                    Reset
+                </button>
+            </div>
+
+            <!-- Filters Grid -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+
+                <!-- Category -->
+                <div>
+                    <label class="block text-sm mb-2 text-gray-600">Category</label>
+                    <select [(ngModel)]="filters.category"
+                        class="w-full px-3 py-2 border rounded-md focus:ring-2 focus:ring-[#D4AF37]">
+                        <option value="all">All Categories</option>
+                        <option value="rings">Rings</option>
+                        <option value="necklaces">Necklaces</option>
+                        <option value="earrings">Earrings</option>
+                        <option value="bracelets">Bracelets</option>
+                    </select>
+                </div>
+
+                <!-- Metal -->
+                <div>
+                    <label class="block text-sm mb-2 text-gray-600">Metal Type</label>
+                    <select [(ngModel)]="filters.metalType"
+                        class="w-full px-3 py-2 border rounded-md focus:ring-2 focus:ring-[#D4AF37]">
+                        <option value="all">All Metals</option>
+                        <option value="gold">Gold</option>
+                        <option value="silver">Silver</option>
+                        <option value="rose-gold">Rose Gold</option>
+                        <option value="platinum">Platinum</option>
+                    </select>
+                </div>
+
+                <!-- Price -->
+                <div>
+                    <label class="block text-sm mb-2 text-gray-600">Price Range</label>
+                    <select [(ngModel)]="filters.priceRange"
+                        class="w-full px-3 py-2 border rounded-md focus:ring-2 focus:ring-[#D4AF37]">
+                        <option value="all">All Prices</option>
+                        <option value="0-500">Under $500</option>
+                        <option value="500-1000">$500 - $1,000</option>
+                        <option value="1000-2500">$1,000 - $2,500</option>
+                        <option value="2500+">$2,500+</option>
+                    </select>
+                </div>
+
+                <!-- Apply Button -->
+                <div class="flex items-end">
+                    <button (click)="onApply()"
+                        class="w-full bg-[#D4AF37] text-[#0B1C2C] py-2 rounded-md hover:bg-[#C5A028] transition">
+                        Apply Filters
+                    </button>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+</div>
+
+
+
+
+<!-- Product Grid Section -->
+<div class="bg-gray-100">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+
+            <app-product *ngFor="let product of products" [product]="product" (edit)="onEdit($event)"
+                (delete)="onDelete($event)">
+            </app-product>
+
+        </div>
+
+    </div>
+</div>
+
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-4">
+
+  <div class="flex justify-center flex-wrap gap-2">
+
+    <!-- Price Low -->
+    <label
+      class="px-4 py-1.5 rounded-full border cursor-pointer text-sm transition-all"
+      [class.bg-[#D4AF37]]="activeSort === 'priceLow'"
+      [class.text-[#0B1C2C]]="activeSort === 'priceLow'"
+      [class.border-[#D4AF37]]="activeSort === 'priceLow'"
+    >
+      <input type="radio" hidden
+        name="sort"
+        value="priceLow"
+        [(ngModel)]="activeSort"
+        (change)="sortBy(activeSort)" />
+      Price ↑
+    </label>
+
+    <!-- Price High -->
+    <label
+      class="px-4 py-1.5 rounded-full border cursor-pointer text-sm transition-all"
+      [class.bg-[#D4AF37]]="activeSort === 'priceHigh'"
+    >
+      <input type="radio" hidden
+        name="sort"
+        value="priceHigh"
+        [(ngModel)]="activeSort"
+        (change)="sortBy(activeSort)" />
+      Price ↓
+    </label>
+
+    <!-- Name A-Z -->
+    <label
+      class="px-4 py-1.5 rounded-full border cursor-pointer text-sm transition-all"
+      [class.bg-[#D4AF37]]="activeSort === 'nameAsc'"
+    >
+      <input type="radio" hidden
+        name="sort"
+        value="nameAsc"
+        [(ngModel)]="activeSort"
+        (change)="sortBy(activeSort)" />
+      A → Z
+    </label>
+
+    <!-- Name Z-A -->
+    <label
+      class="px-4 py-1.5 rounded-full border cursor-pointer text-sm transition-all"
+      [class.bg-[#D4AF37]]="activeSort === 'nameDesc'"
+    >
+      <input type="radio" hidden
+        name="sort"
+        value="nameDesc"
+        [(ngModel)]="activeSort"
+        (change)="sortBy(activeSort)" />
+      Z → A
+    </label>
+
+  </div>
+
+</div>
+
+<app-product-form *ngIf="showModal" [product]="selectedProduct" (submitForm)="handleSave($event)"
+    (cancel)="showModal = false">
+</app-product-form>

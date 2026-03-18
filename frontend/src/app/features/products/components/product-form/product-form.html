@@ -1,0 +1,104 @@
+<div
+  class="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50"
+  (click)="onOverlayClick($event)"
+>
+
+  <!-- Modal -->
+  <div
+    class="bg-white rounded-lg shadow-2xl max-w-3xl w-full max-h-[90vh] overflow-y-auto"
+    (click)="$event.stopPropagation()"
+  >
+
+    <!-- Header -->
+    <div class="bg-[#0B1C2C] text-white px-6 py-4 flex items-center justify-between sticky top-0">
+      <h2 class="text-xl">
+        {{ product ? 'Edit Product' : 'Add New Product' }}
+      </h2>
+
+      <button (click)="onCancel()" class="p-2 hover:bg-white/10 rounded-full">
+        <lucide-icon [img]="X" class="w-5 h-5"></lucide-icon>
+      </button>
+    </div>
+
+    <!-- Form -->
+    <form #form="ngForm" (ngSubmit)="onSubmit(form)" class="p-6">
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+
+        <!-- Name -->
+        <div class="md:col-span-2">
+          <label class="block text-sm mb-2">Product Name *</label>
+          <input type="text" name="name" [(ngModel)]="formData.name" required
+            class="w-full px-4 py-2 border rounded-md focus:ring-2 focus:ring-[#D4AF37]">
+        </div>
+
+        <!-- Category -->
+        <div>
+          <label class="block text-sm mb-2">Category *</label>
+          <select name="category" [(ngModel)]="formData.category"
+            class="w-full px-4 py-2 border rounded-md focus:ring-2 focus:ring-[#D4AF37]">
+            <option value="rings">Rings</option>
+            <option value="necklaces">Necklaces</option>
+            <option value="earrings">Earrings</option>
+            <option value="bracelets">Bracelets</option>
+          </select>
+        </div>
+
+        <!-- Metal -->
+        <div>
+          <label class="block text-sm mb-2">Metal Type *</label>
+          <select name="metalType" [(ngModel)]="formData.metalType"
+            class="w-full px-4 py-2 border rounded-md focus:ring-2 focus:ring-[#D4AF37]">
+            <option value="gold">Gold</option>
+            <option value="silver">Silver</option>
+            <option value="rose-gold">Rose Gold</option>
+            <option value="platinum">Platinum</option>
+          </select>
+        </div>
+
+        <!-- Price -->
+        <div>
+          <label class="block text-sm mb-2">Price *</label>
+          <input type="number" name="price" [(ngModel)]="formData.price" required
+            class="w-full px-4 py-2 border rounded-md focus:ring-2 focus:ring-[#D4AF37]">
+        </div>
+
+        <!-- Image -->
+        <div>
+          <label class="block text-sm mb-2">Image URL *</label>
+          <input type="url" name="image" [(ngModel)]="formData.image" required
+            class="w-full px-4 py-2 border rounded-md focus:ring-2 focus:ring-[#D4AF37]">
+        </div>
+
+        <!-- Description -->
+        <div class="md:col-span-2">
+          <label class="block text-sm mb-2">Description</label>
+          <textarea name="description" [(ngModel)]="formData.description" rows="4"
+            class="w-full px-4 py-2 border rounded-md focus:ring-2 focus:ring-[#D4AF37]"></textarea>
+        </div>
+
+      </div>
+
+      <!-- Actions -->
+      <div class="flex gap-4 justify-end pt-4">
+
+        <button type="button" (click)="onCancel()"
+          class="px-6 py-2 border rounded-md">
+          Cancel
+        </button>
+
+        <button type="submit"
+          class="flex items-center gap-2 px-6 py-2 bg-[#D4AF37] text-[#0B1C2C] rounded-md">
+
+          <lucide-icon *ngIf="product" [img]="Save" class="w-4 h-4"></lucide-icon>
+          <lucide-icon *ngIf="!product" [img]="Plus" class="w-4 h-4"></lucide-icon>
+
+          {{ product ? 'Update Product' : 'Add Product' }}
+        </button>
+
+      </div>
+
+    </form>
+
+  </div>
+</div>

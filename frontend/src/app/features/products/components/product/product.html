@@ -1,0 +1,74 @@
+<div class="bg-white rounded-lg shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden group">
+
+  <!-- Image -->
+  <div class="relative overflow-hidden aspect-square">
+    <img
+      [src]="product.image"
+      [alt]="product.name"
+      class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+    />
+
+    <!-- Favorite -->
+    <button
+      (click)="onFavorite($event)"
+      class="absolute top-3 right-3 p-2 bg-white/90 rounded-full opacity-0 group-hover:opacity-100 transition-opacity hover:bg-white">
+
+      <lucide-icon
+        [img]="Heart"
+        class="w-5 h-5 text-[#4A4A4A] hover:text-[#D4AF37] hover:fill-[#D4AF37] transition">
+      </lucide-icon>
+
+    </button>
+  </div>
+
+  <!-- Content -->
+  <div class="p-5">
+
+    <div class="mb-3">
+      <h3 class="text-lg text-[#2c2c2c] mb-1">
+        {{ product.name }}
+      </h3>
+
+      <p class="text-sm text-[#6b6b6b] capitalize">
+        {{ product.metalType.replace('-', ' ') }}
+      </p>
+    </div>
+
+    <!-- Price + Category -->
+    <div class="flex items-center justify-between mb-4">
+
+      <span class="text-xl text-[#D4AF37]">
+        ₹{{ product.price | number }}
+      </span>
+
+      <span class="text-xs text-[#6b6b6b] uppercase tracking-wide bg-[#F9F9F9] px-3 py-1 rounded-full">
+        {{ product.category }}
+      </span>
+
+    </div>
+
+    <!-- Actions -->
+    <div class="flex gap-2">
+
+      <!-- Edit -->
+      <button
+        (click)="onEdit()"
+        class="flex-1 flex items-center justify-center gap-2 px-4 py-2 border-2 border-[#D4AF37] text-[#D4AF37] rounded-md hover:bg-[#D4AF37] hover:text-[#0B1C2C] transition-all">
+
+        <lucide-icon [img]="Edit2" class="w-4 h-4"></lucide-icon>
+        <span class="text-sm">Edit</span>
+      </button>
+
+      <!-- Delete -->
+      <button
+        (click)="onDelete()"
+        class="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition">
+
+        <lucide-icon [img]="Trash2" class="w-4 h-4"></lucide-icon>
+        <span class="text-sm">Delete</span>
+      </button>
+
+    </div>
+
+  </div>
+</div>

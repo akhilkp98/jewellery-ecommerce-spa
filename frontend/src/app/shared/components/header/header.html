@@ -1,0 +1,64 @@
+<header class="bg-[#0B1C2C] text-white shadow-lg sticky top-0 z-50">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+
+    <div class="flex items-center justify-between h-16">
+
+      <!-- Logo -->
+      <div class="flex items-center gap-2">
+        <lucide-icon [img]="Gem" class="w-8 h-8 text-[#D4AF37]"></lucide-icon>
+        <h1 class="text-xl sm:text-2xl text-[#D4AF37] font-semibold">
+          LUXE JEWELS
+        </h1>
+      </div>
+
+      <!-- Desktop Nav -->
+      <nav class="hidden md:flex items-center gap-8">
+        <a *ngFor="let item of navItems"
+           href="#"
+           (click)="handleNavClick($event, item)"
+           class="hover:text-[#D4AF37] transition-colors capitalize">
+          {{ item }}
+        </a>
+      </nav>
+
+      <!-- Desktop Actions -->
+      <div class="hidden md:flex items-center gap-4">
+        <button (click)="handleSearch()" class="p-2 hover:text-[#D4AF37]">
+          <lucide-icon [img]="Search" class="w-5 h-5"></lucide-icon>
+        </button>
+        <button (click)="handleCart()" class="p-2 hover:text-[#D4AF37]">
+          <lucide-icon [img]="ShoppingBag" class="w-5 h-5"></lucide-icon>
+        </button>
+      </div>
+
+      <!-- Mobile Menu Button -->
+      <button class="md:hidden p-2" (click)="toggleMenu()">
+        <lucide-icon *ngIf="!isMenuOpen" [img]="Menu" class="w-6 h-6"></lucide-icon>
+        <lucide-icon *ngIf="isMenuOpen" [img]="X" class="w-6 h-6"></lucide-icon>
+      </button>
+
+    </div>
+
+    <!-- Mobile Menu -->
+    <div *ngIf="isMenuOpen" class="md:hidden mt-2 pb-4 space-y-3">
+
+      <a *ngFor="let item of navItems"
+         href="#"
+         (click)="handleNavClick($event, item)"
+         class="block px-2 py-2 hover:text-[#D4AF37] capitalize">
+        {{ item }}
+      </a>
+
+      <div class="flex gap-4 px-2 pt-2 border-t border-gray-700">
+        <button (click)="handleSearch()" class="p-2 hover:text-[#D4AF37]">
+          <lucide-icon [img]="Search" class="w-5 h-5"></lucide-icon>
+        </button>
+        <button (click)="handleCart()" class="p-2 hover:text-[#D4AF37]">
+          <lucide-icon [img]="ShoppingBag" class="w-5 h-5"></lucide-icon>
+        </button>
+      </div>
+
+    </div>
+
+  </div>
+</header>
