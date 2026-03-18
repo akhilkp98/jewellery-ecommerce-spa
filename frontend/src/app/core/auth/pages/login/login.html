@@ -1,0 +1,70 @@
+<div class="relative min-h-screen flex items-center justify-center bg-[#0B1C2C] overflow-hidden">
+
+  <img src="/assets/images/login-bg.png" alt="Luxe Jewels Background"
+    class="absolute inset-0 w-full h-full object-cover object-center opacity-40">
+  <div class="absolute inset-0 bg-[#0B1C2C]/50"></div>
+
+  <div
+    class="relative z-10 w-full max-w-[420px] p-8 sm:p-10 mx-4 bg-white/10 backdrop-blur-md border border-white/20 rounded-[1.25rem] shadow-[0_8px_32px_0_rgba(0,0,0,0.5)]">
+
+    <div class="text-center mb-10">
+      <div class="flex items-center justify-center gap-3 mb-6">
+        <lucide-icon [img]="Gem" class="w-10 h-10 text-[#D4AF37]"></lucide-icon>
+        <h1 class="text-3xl text-[#D4AF37] font-semibold tracking-wider">
+          LUXE JEWELS
+        </h1>
+      </div>
+      <h2 class="text-[28px] font-light text-white mb-2 tracking-wide">Welcome Back</h2>
+      <p class="text-gray-400 text-sm">Login to your account</p>
+    </div>
+
+    <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="flex flex-col gap-6">
+
+      <div>
+        <label class="block text-xs text-white/80 mb-2 font-medium tracking-wider">Email Address</label>
+        <div class="relative">
+          <lucide-icon [img]="Mail"
+            class="absolute left-2 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400"></lucide-icon>
+          <input type="email" formControlName="email" autocomplete="email" placeholder="Email Address"
+            class="w-full bg-white/5 border border-white/10 rounded-lg py-3.5 pl-12 pr-4 text-white text-sm placeholder-gray-400 focus:outline-none focus:border-[#D4AF37] focus:ring-1 focus:ring-[#D4AF37] transition-all"
+            [ngClass]="{'border-red-400/50 focus:border-red-400 focus:ring-red-400': emailParams?.invalid && emailParams?.touched}">
+        </div>
+        <div *ngIf="emailParams?.invalid && emailParams?.touched" class="text-red-400 text-xs mt-1.5 ml-1 font-medium">
+          <span *ngIf="emailParams?.errors?.['required']">Email is required</span>
+          <span *ngIf="emailParams?.errors?.['email']">Please enter a valid email address</span>
+        </div>
+      </div>
+
+      <div>
+        <label class="block text-xs text-white/80 mb-2 font-medium tracking-wider">Password</label>
+        <div class="relative">
+          <lucide-icon [img]="Lock"
+            class="absolute left-2 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400"></lucide-icon>
+          <input [type]="showPassword ? 'text' : 'password'" formControlName="password" required
+            autocomplete="current-password" placeholder="Password"
+            class="w-full bg-white/5 border border-white/10 rounded-lg py-3.5 pl-12 pr-16 text-white text-sm placeholder-gray-400 focus:outline-none focus:border-[#D4AF37] focus:ring-1 focus:ring-[#D4AF37] transition-all"
+            [ngClass]="{'border-red-400/50 focus:border-red-400 focus:ring-red-400': passwordParams?.invalid && passwordParams?.touched}">
+          <button type="button" (click)="showPassword = !showPassword" tabindex="-1"
+            class="absolute right-2 top-1/2 -translate-y-1/2 text-xs font-medium bg-white/5 border border-white/10 rounded text-gray-400 hover:text-white px-2 py-1 transition-colors cursor-pointer focus:outline-none">
+            {{ showPassword ? 'Hide' : 'Show' }}
+          </button>
+        </div>
+        <div *ngIf="passwordParams?.invalid && passwordParams?.touched"
+          class="text-red-400 text-xs mt-1.5 ml-1 font-medium">
+          <span *ngIf="passwordParams?.errors?.['required']">Password is required</span>
+          <span *ngIf="passwordParams?.errors?.['minlength']">Password must be at least 6 characters</span>
+        </div>
+      </div>
+
+      <button type="submit" [disabled]="loginForm.invalid"
+        class="mt-2 w-full bg-gradient-to-r from-[#D4AF37] to-[#e8cb6d] text-black font-medium text-[15px] py-3.5 rounded-lg hover:shadow-[0_0_20px_rgba(212,175,55,0.4)] disabled:opacity-50 disabled:cursor-not-allowed transition-all cursor-pointer">
+        Login
+      </button>
+
+    </form>
+
+    <div class="absolute -bottom-12 left-1/2 -translate-x-1/2 w-full text-center">
+      <p class="text-xs text-gray-500">© 2026 <span class="text-[#D4AF37]">Luxe Jewels</span>. All rights reserved.</p>
+    </div>
+  </div>
+</div>

@@ -7,18 +7,6 @@
       [alt]="product.name"
       class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
     />
-
-    <!-- Favorite -->
-    <button
-      (click)="onFavorite($event)"
-      class="absolute top-3 right-3 p-2 bg-white/90 rounded-full opacity-0 group-hover:opacity-100 transition-opacity hover:bg-white">
-
-      <lucide-icon
-        [img]="Heart"
-        class="w-5 h-5 text-[#4A4A4A] hover:text-[#D4AF37] hover:fill-[#D4AF37] transition">
-      </lucide-icon>
-
-    </button>
   </div>
 
   <!-- Content -->
@@ -74,7 +62,7 @@
       <!-- Edit -->
       <button
         (click)="onEdit()"
-        class="flex-1 flex items-center justify-center gap-2 px-4 py-2 border-2 border-[#D4AF37] text-[#D4AF37] rounded-md hover:bg-[#D4AF37] hover:text-[#0B1C2C] transition-all">
+        class="flex-1 flex items-center justify-center gap-2 px-4 py-2 border-2 border-[#D4AF37] text-[#D4AF37] rounded-md hover:bg-[#D4AF37] hover:text-[#0B1C2C] transition-all cursor-pointer">
 
         <lucide-icon [img]="Edit2" class="w-4 h-4"></lucide-icon>
         <span class="text-sm">Edit</span>
@@ -83,7 +71,7 @@
       <!-- Delete -->
       <button
         (click)="onDelete()"
-        class="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition">
+        class="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition cursor-pointer">
 
         <lucide-icon [img]="Trash2" class="w-4 h-4"></lucide-icon>
         <span class="text-sm">Delete</span>

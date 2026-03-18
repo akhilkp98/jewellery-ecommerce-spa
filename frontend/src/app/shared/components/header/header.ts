@@ -1,6 +1,7 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { LucideAngularModule, Gem, Search, ShoppingBag, Menu, X } from 'lucide-angular';
+import { LucideAngularModule, Gem, Search, ShoppingBag, Menu, X, LogOut } from 'lucide-angular';
+import { AuthService } from '../../../core/auth/services/auth.service';
 
 @Component({
   selector: 'app-header',
@@ -16,6 +17,9 @@ export class Header {
   readonly ShoppingBag = ShoppingBag;
   readonly Menu = Menu;
   readonly X = X;
+  readonly LogOut = LogOut;
+
+  authService = inject(AuthService);
 
   isMenuOpen = false;
 
@@ -39,5 +43,23 @@ export class Header {
 
   handleCart() {
     console.log('Cart clicked');
+  }
+
+  showLogoutModal = false;
+
+  confirmLogout() {
+    this.showLogoutModal = true;
+    if (this.isMenuOpen) {
+      this.isMenuOpen = false;
+    }
+  }
+
+  executeLogout() {
+    this.authService.logout();
+    this.showLogoutModal = false;
+  }
+
+  cancelLogout() {
+    this.showLogoutModal = false;
   }
 }

@@ -1,6 +1,6 @@
 import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { LucideAngularModule, Edit2, Trash2, Heart } from 'lucide-angular';
+import { LucideAngularModule, Edit2, Trash2 } from 'lucide-angular';
 
 @Component({
   selector: 'app-product',
@@ -17,7 +17,6 @@ export class Product {
 
   readonly Edit2 = Edit2;
   readonly Trash2 = Trash2;
-  readonly Heart = Heart;
 
   onEdit() {
     this.edit.emit(this.product);
@@ -25,10 +24,5 @@ export class Product {
 
   onDelete() {
     this.delete.emit(this.product.id);
-  }
-
-  onFavorite(event: Event) {
-    event.stopPropagation();
-    console.log('Favorite:', this.product.name);
   }
 }

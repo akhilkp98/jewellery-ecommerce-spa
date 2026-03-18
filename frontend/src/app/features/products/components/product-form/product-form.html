@@ -5,33 +5,37 @@
     (click)="$event.stopPropagation()">
 
     <!-- Header -->
-    <div class="bg-[#0B1C2C] text-white px-6 py-4 flex items-center justify-between sticky top-0">
+    <div class="bg-[#0B1C2C] text-white px-6 py-4 flex items-center justify-between sticky top-0 z-10">
       <h2 class="text-xl">
         {{ product ? 'Edit Product' : 'Add New Product' }}
       </h2>
 
-      <button (click)="onCancel()" class="p-2 hover:bg-white/10 rounded-full">
+      <button (click)="onCancel()" class="p-2 hover:bg-white/10 rounded-full cursor-pointer">
         <lucide-icon [img]="X" class="w-5 h-5"></lucide-icon>
       </button>
     </div>
 
     <!-- Form -->
-    <form #form="ngForm" (ngSubmit)="onSubmit(form)" class="p-6">
+    <form [formGroup]="productForm" (ngSubmit)="onSubmit()" class="p-6">
 
       <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
 
         <!-- Name -->
         <div>
-          <label class="block text-sm mb-2">Product Name *</label>
-          <input type="text" name="name" [(ngModel)]="formData.name" required
-            class="w-full px-4 py-2 border rounded-md focus:ring-2 focus:ring-[#D4AF37]">
+          <label class="block text-sm mb-2 font-medium">Product Name *</label>
+          <input type="text" formControlName="name"
+            class="w-full px-4 py-2 border rounded-md focus:ring-2 focus:ring-[#D4AF37] cursor-pointer"
+            [ngClass]="{'border-red-500': f['name'].invalid && f['name'].touched}">
+          <div *ngIf="f['name'].invalid && f['name'].touched" class="text-red-500 text-xs mt-1">
+            Name must be 3-100 characters containing valid symbols.
+          </div>
         </div>
 
         <!-- Category -->
         <div>
-          <label class="block text-sm mb-2">Category *</label>
-          <select name="category" [(ngModel)]="formData.category"
-            class="w-full px-4 py-2 border rounded-md focus:ring-2 focus:ring-[#D4AF37]">
+          <label class="block text-sm mb-2 font-medium">Category *</label>
+          <select formControlName="category"
+            class="w-full px-4 py-2 border rounded-md focus:ring-2 focus:ring-[#D4AF37] cursor-pointer">
             <option value="rings">Rings</option>
             <option value="necklaces">Necklaces</option>
             <option value="earrings">Earrings</option>
@@ -41,9 +45,9 @@
 
         <!-- Metal -->
         <div>
-          <label class="block text-sm mb-2">Metal Type *</label>
-          <select name="metalType" [(ngModel)]="formData.metalType"
-            class="w-full px-4 py-2 border rounded-md focus:ring-2 focus:ring-[#D4AF37]">
+          <label class="block text-sm mb-2 font-medium">Metal Type *</label>
+          <select formControlName="metalType"
+            class="w-full px-4 py-2 border rounded-md focus:ring-2 focus:ring-[#D4AF37] cursor-pointer">
             <option value="gold">Gold</option>
             <option value="silver">Silver</option>
             <option value="rose-gold">Rose Gold</option>
@@ -53,52 +57,65 @@
 
         <!-- Weight -->
         <div>
-          <label class="block text-sm mb-2">Weight (g) *</label>
-          <input type="number" name="weight" [(ngModel)]="formData.weight" required
-            class="w-full px-4 py-2 border rounded-md focus:ring-2 focus:ring-[#D4AF37]">
+          <label class="block text-sm mb-2 font-medium">Weight (g) *</label>
+          <input type="number" formControlName="weight"
+            class="w-full px-4 py-2 border rounded-md focus:ring-2 focus:ring-[#D4AF37] cursor-pointer"
+             [ngClass]="{'border-red-500': f['weight'].invalid && f['weight'].touched}">
+          <div *ngIf="f['weight'].invalid && f['weight'].touched" class="text-red-500 text-xs mt-1">
+            Valid weight from 0.01 to 1000 required.
+          </div>
         </div>
 
         <!-- Current Metal Price -->
         <div>
-          <label class="block text-sm mb-2">Current metal price (per g) *</label>
-          <input type="number" name="currentMetalPrice" [(ngModel)]="formData.currentMetalPrice" required
-            class="w-full px-4 py-2 border rounded-md focus:ring-2 focus:ring-[#D4AF37]">
+          <label class="block text-sm mb-2 font-medium">Current metal price (per g) *</label>
+          <input type="number" formControlName="currentMetalPrice"
+            class="w-full px-4 py-2 border rounded-md focus:ring-2 focus:ring-[#D4AF37] cursor-pointer"
+            [ngClass]="{'border-red-500': f['currentMetalPrice'].invalid && f['currentMetalPrice'].touched}">
         </div>
 
         <!-- Making charges -->
         <div>
-          <label class="block text-sm mb-2">Making charges *</label>
-          <input type="number" name="makingCharges" [(ngModel)]="formData.makingCharges" required
-            class="w-full px-4 py-2 border rounded-md focus:ring-2 focus:ring-[#D4AF37]">
+          <label class="block text-sm mb-2 font-medium">Making charges *</label>
+          <input type="number" formControlName="makingCharges"
+            class="w-full px-4 py-2 border rounded-md focus:ring-2 focus:ring-[#D4AF37] cursor-pointer"
+            [ngClass]="{'border-red-500': f['makingCharges'].invalid && f['makingCharges'].touched}">
         </div>
 
         <!-- Shipping charges -->
         <div>
-          <label class="block text-sm mb-2">Shipping charges *</label>
-          <input type="number" name="shippingCharges" [(ngModel)]="formData.shippingCharges" required
-            class="w-full px-4 py-2 border rounded-md focus:ring-2 focus:ring-[#D4AF37]">
+          <label class="block text-sm mb-2 font-medium">Shipping charges *</label>
+          <input type="number" formControlName="shippingCharges"
+            class="w-full px-4 py-2 border rounded-md focus:ring-2 focus:ring-[#D4AF37] cursor-pointer"
+            [ngClass]="{'border-red-500': f['shippingCharges'].invalid && f['shippingCharges'].touched}">
         </div>
 
         <!-- Tax -->
         <div>
-          <label class="block text-sm mb-2">Tax Information *</label>
-          <select name="tax" [(ngModel)]="formData.tax" required
-            class="w-full px-4 py-2 border rounded-md focus:ring-2 focus:ring-[#D4AF37]">
+          <label class="block text-sm mb-2 font-medium">Tax Information *</label>
+          <select formControlName="tax"
+            class="w-full px-4 py-2 border rounded-md focus:ring-2 focus:ring-[#D4AF37] cursor-pointer">
+            <option value="GST (3%)">GST (3%)</option>
             <option value="GST (5%)">GST (5%)</option>
+            <option value="GST (12%)">GST (12%)</option>
           </select>
         </div>
 
         <!-- Image -->
         <div class="md:col-span-2">
-          <label class="block text-sm mb-2">Image URL *</label>
-          <input type="url" name="image" [(ngModel)]="formData.image" required
-            class="w-full px-4 py-2 border rounded-md focus:ring-2 focus:ring-[#D4AF37]">
+          <label class="block text-sm mb-2 font-medium">Image URL *</label>
+          <input type="url" formControlName="image"
+            class="w-full px-4 py-2 border rounded-md focus:ring-2 focus:ring-[#D4AF37] cursor-pointer"
+            [ngClass]="{'border-red-500': f['image'].invalid && f['image'].touched}">
+          <div *ngIf="f['image'].invalid && f['image'].touched" class="text-red-500 text-xs mt-1">
+            Image URL must be valid and end in .jpg, .png, .jpeg, or .webp.
+          </div>
         </div>
 
         <!-- Availability AND Price Calculation Display -->
         <div class="md:col-span-2 flex items-center justify-between bg-gray-50 p-4 rounded-lg border">
           <label class="relative inline-flex items-center cursor-pointer">
-            <input type="checkbox" name="availability" [(ngModel)]="formData.availability" class="sr-only peer">
+            <input type="checkbox" formControlName="availability" class="sr-only peer">
             <div class="w-11 h-6 bg-gray-300 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#D4AF37]"></div>
             <span class="ml-3 text-sm font-medium text-gray-700">Available</span>
           </label>
@@ -114,11 +131,12 @@
       <!-- Actions -->
       <div class="flex gap-4 justify-end pt-4">
 
-        <button type="button" (click)="onCancel()" class="px-6 py-2 border rounded-md">
+        <button type="button" (click)="onCancel()" class="px-6 py-2 border rounded-md cursor-pointer hover:bg-gray-50 transition-colors">
           Cancel
         </button>
 
-        <button type="submit" class="flex items-center gap-2 px-6 py-2 bg-[#D4AF37] text-[#0B1C2C] rounded-md">
+        <button type="submit" [disabled]="productForm.invalid"
+          class="flex items-center gap-2 px-6 py-2 bg-[#D4AF37] text-[#0B1C2C] rounded-md hover:bg-[#C5A028] transition-colors disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer">
 
           <lucide-icon *ngIf="product" [img]="Save" class="w-4 h-4"></lucide-icon>
           <lucide-icon *ngIf="!product" [img]="Plus" class="w-4 h-4"></lucide-icon>

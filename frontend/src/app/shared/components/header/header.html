@@ -26,8 +26,12 @@
         <button (click)="handleSearch()" class="p-2 hover:text-[#D4AF37]">
           <lucide-icon [img]="Search" class="w-5 h-5"></lucide-icon>
         </button>
-        <button (click)="handleCart()" class="p-2 hover:text-[#D4AF37]">
+        <button (click)="handleCart()" class="p-2 hover:text-[#D4AF37] cursor-pointer">
           <lucide-icon [img]="ShoppingBag" class="w-5 h-5"></lucide-icon>
+        </button>
+        <button *ngIf="authService.isLoggedIn$ | async" (click)="confirmLogout()" class="flex items-center gap-1.5 p-2 hover:text-red-400 cursor-pointer transition-colors" title="Logout">
+          <lucide-icon [img]="LogOut" class="w-5 h-5"></lucide-icon>
+          <span class="text-sm font-medium">Logout</span>
         </button>
       </div>
 
@@ -53,8 +57,12 @@
         <button (click)="handleSearch()" class="p-2 hover:text-[#D4AF37]">
           <lucide-icon [img]="Search" class="w-5 h-5"></lucide-icon>
         </button>
-        <button (click)="handleCart()" class="p-2 hover:text-[#D4AF37]">
+        <button (click)="handleCart()" class="p-2 hover:text-[#D4AF37] cursor-pointer">
           <lucide-icon [img]="ShoppingBag" class="w-5 h-5"></lucide-icon>
+        </button>
+        <button *ngIf="authService.isLoggedIn$ | async" (click)="confirmLogout()" class="flex items-center gap-1.5 p-2 hover:text-red-400 cursor-pointer transition-colors" title="Logout">
+          <lucide-icon [img]="LogOut" class="w-5 h-5"></lucide-icon>
+          <span class="text-sm font-medium">Logout</span>
         </button>
       </div>
 
@@ -62,3 +70,21 @@
 
   </div>
 </header>
+
+<!-- Logout Confirmation Modal -->
+<div *ngIf="showLogoutModal" class="fixed inset-0 bg-black/50 z-[100] flex items-center justify-center p-4 transition-opacity" (click)="cancelLogout()">
+  <div class="bg-white rounded-lg shadow-xl max-w-sm w-full p-6 animate-in fade-in zoom-in-95 duration-200" (click)="$event.stopPropagation()">
+    <h3 class="text-xl font-semibold text-[#0B1C2C] mb-2">Confirm Logout</h3>
+    <p class="text-gray-600 mb-6 text-sm">Are you sure you want to log out of your account?</p>
+    
+    <div class="flex items-center justify-end gap-3">
+      <button (click)="cancelLogout()" class="px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100 rounded-md transition-colors cursor-pointer">
+        Cancel
+      </button>
+      <button (click)="executeLogout()" class="px-4 py-2 text-sm font-medium bg-red-500 text-white rounded-md hover:bg-red-600 transition-colors cursor-pointer flex items-center gap-2">
+        <lucide-icon [img]="LogOut" class="w-4 h-4"></lucide-icon>
+        Logout
+      </button>
+    </div>
+  </div>
+</div>

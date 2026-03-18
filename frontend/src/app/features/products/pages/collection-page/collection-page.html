@@ -10,14 +10,14 @@
                     Our Collection
                 </h1>
                 <p class="text-sm sm:text-base text-gray-600 mt-1">
-                    Showing {{ filteredProducts.length }} of {{ products.length }} products
+                    Showing {{ filteredProducts.length }} products
                 </p>
             </div>
 
             <!-- Right -->
             <div class="flex justify-start sm:justify-end">
                 <button (click)="openAddProduct()"
-                    class="flex items-center gap-2 bg-[#D4AF37] text-[#0B1C2C] px-4 sm:px-5 py-2.5 rounded-md shadow hover:bg-[#C5A028] transition-all">
+                    class="flex items-center gap-2 bg-[#D4AF37] text-[#0B1C2C] px-4 sm:px-5 py-2.5 rounded-md shadow hover:bg-[#C5A028] transition-all cursor-pointer">
                     <span class="text-lg">+</span>
                     <span class="font-medium">Add Product</span>
                 </button>
@@ -41,7 +41,7 @@
                     <h3 class="text-lg text-[#2c2c2c] font-medium">Filter Products</h3>
                 </div>
 
-                <button (click)="onReset()" class="text-sm text-gray-500 hover:text-[#D4AF37] transition">
+                <button (click)="onReset()" class="text-sm text-gray-500 hover:text-[#D4AF37] transition cursor-pointer">
                     Reset
                 </button>
             </div>
@@ -53,7 +53,7 @@
                 <div>
                     <label class="block text-sm mb-2 text-gray-600">Category</label>
                     <select [(ngModel)]="filters.category"
-                        class="w-full px-3 py-2 border rounded-md focus:ring-2 focus:ring-[#D4AF37]">
+                        class="w-full px-3 py-2 border rounded-md focus:ring-2 focus:ring-[#D4AF37] cursor-pointer">
                         <option value="all">All Categories</option>
                         <option value="rings">Rings</option>
                         <option value="necklaces">Necklaces</option>
@@ -66,7 +66,7 @@
                 <div>
                     <label class="block text-sm mb-2 text-gray-600">Metal Type</label>
                     <select [(ngModel)]="filters.metalType"
-                        class="w-full px-3 py-2 border rounded-md focus:ring-2 focus:ring-[#D4AF37]">
+                        class="w-full px-3 py-2 border rounded-md focus:ring-2 focus:ring-[#D4AF37] cursor-pointer">
                         <option value="all">All Metals</option>
                         <option value="gold">Gold</option>
                         <option value="silver">Silver</option>
@@ -79,7 +79,7 @@
                 <div>
                     <label class="block text-sm mb-2 text-gray-600">Price Range</label>
                     <select [(ngModel)]="filters.priceRange"
-                        class="w-full px-3 py-2 border rounded-md focus:ring-2 focus:ring-[#D4AF37]">
+                        class="w-full px-3 py-2 border rounded-md focus:ring-2 focus:ring-[#D4AF37] cursor-pointer">
                         <option value="all">All Prices</option>
                         <option value="0-10000">AED 0 - AED 10,000</option>
                         <option value="10000-20000">AED 10,000 - AED 20,000</option>
@@ -92,7 +92,7 @@
                 <!-- Apply Button -->
                 <div class="flex items-end">
                     <button (click)="onApply()"
-                        class="w-full bg-[#D4AF37] text-[#0B1C2C] py-2 rounded-md hover:bg-[#C5A028] transition">
+                        class="w-full bg-[#D4AF37] text-[#0B1C2C] py-2 rounded-md hover:bg-[#C5A028] transition cursor-pointer">
                         Apply Filters
                     </button>
                 </div>
@@ -113,7 +113,7 @@
         <div *ngIf="filteredProducts.length > 0" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
 
             <app-product *ngFor="let product of filteredProducts" [product]="product" (edit)="onEdit($event)"
-                (delete)="onDelete($event)">
+                (delete)="confirmDelete($event)">
             </app-product>
 
         </div>
@@ -125,7 +125,7 @@
             </div>
             <h3 class="text-xl font-medium text-gray-900 mb-2">No products found</h3>
             <p class="text-gray-500 max-w-sm">We couldn't find any products matching your current filters. Try adjusting your search criteria or resetting the filters.</p>
-            <button (click)="onReset()" class="mt-6 px-6 py-2 bg-[#0B1C2C] text-white rounded-md hover:bg-gray-800 transition shadow-sm">
+            <button (click)="onReset()" class="mt-6 px-6 py-2 bg-[#0B1C2C] text-white rounded-md hover:bg-gray-800 transition shadow-sm cursor-pointer">
                 Clear Filters
             </button>
         </div>
@@ -198,3 +198,22 @@
 <app-product-form *ngIf="showModal" [product]="selectedProduct" (submitForm)="handleSave($event)"
     (cancel)="showModal = false">
 </app-product-form>
+
+<!-- Delete Confirmation Modal -->
+<div *ngIf="showDeleteModal" class="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
+  <div class="bg-white rounded-lg shadow-2xl max-w-md w-full p-6 text-center">
+    <div class="w-16 h-16 bg-red-50 rounded-full flex items-center justify-center mx-auto mb-4">
+      <lucide-icon [img]="Trash2" class="w-8 h-8 text-red-500"></lucide-icon>
+    </div>
+    <h3 class="text-xl font-medium text-gray-900 mb-2">Delete Product</h3>
+    <p class="text-gray-500 mb-6">Are you sure you want to delete this product? This action cannot be undone.</p>
+    <div class="flex gap-4 justify-center">
+      <button (click)="cancelDelete()" class="px-6 py-2 border rounded-md hover:bg-gray-50 transition cursor-pointer">
+        Cancel
+      </button>
+      <button (click)="executeDelete()" class="px-6 py-2 bg-red-500 text-white rounded-md hover:bg-red-600 transition shadow-sm cursor-pointer">
+        Delete Product
+      </button>
+    </div>
+  </div>
+</div>
