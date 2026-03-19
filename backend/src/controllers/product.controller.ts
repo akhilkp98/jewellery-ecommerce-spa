@@ -32,7 +32,11 @@ export const getProducts = (req: Request, res: Response) => {
     if (sort === 'priceLow') filtered.sort((a, b) => a.price - b.price);
     if (sort === 'priceHigh') filtered.sort((a, b) => b.price - a.price);
     if (sort === 'nameAsc') filtered.sort((a, b) => a.name.localeCompare(b.name));
-    if (sort === 'nameDesc') filtered.sort((a, b) => b.name.localeCompare(a.name));
+    if (sort === 'latest') {
+      filtered.sort((a, b) => (b.productId || 0) - (a.productId || 0));
+    }
+  } else {
+    filtered.sort((a, b) => (b.productId || 0) - (a.productId || 0));
   }
   
   res.json(filtered);
@@ -52,8 +56,10 @@ export const createProduct = (req: Request, res: Response) => {
     const data = ProductSchema.parse(req.body);
     const price = calculatePrice(data.weight, data.currentMetalPrice, data.makingCharges, data.shippingCharges, data.tax);
     
+    const newProductId = products.length > 0 ? Math.max(...products.map(p => p.productId || 0)) + 1 : 1;
     const newProduct: Product = {
       id: uuidv4(),
+      productId: newProductId,
       ...data,
       description: data.description || '',
       price

@@ -1,5 +1,6 @@
 import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { Router } from '@angular/router';
 import { LucideAngularModule, Gem, Search, ShoppingBag, Menu, X, LogOut } from 'lucide-angular';
 import { AuthService } from '../../../core/auth/services/auth.service';
 
@@ -20,10 +21,11 @@ export class Header {
   readonly LogOut = LogOut;
 
   authService = inject(AuthService);
+  router = inject(Router);
 
   isMenuOpen = false;
 
-  navItems = ['collections', 'rings', 'necklaces', 'bracelets', 'earrings'];
+  navItems = ['collections', 'orders', 'users'];
 
   toggleMenu() {
     this.isMenuOpen = !this.isMenuOpen;
@@ -33,8 +35,7 @@ export class Header {
     event.preventDefault();
     this.isMenuOpen = false;
 
-    const el = document.getElementById(section);
-    el?.scrollIntoView({ behavior: 'smooth' });
+    this.router.navigate([`/${section.toLowerCase()}`]);
   }
 
   handleSearch() {

@@ -32,7 +32,7 @@ export class Login {
     if (this.loginForm.valid) {
       this.authService.login(this.loginForm.value).subscribe({
         next: () => {
-          this.router.navigate(['/home'], { replaceUrl: true });
+          this.router.navigate(['/collections'], { replaceUrl: true });
         }
       });
     } else {

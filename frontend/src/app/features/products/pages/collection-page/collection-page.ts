@@ -34,7 +34,7 @@ export class CollectionPage implements OnInit {
   };
 
   filteredProducts: any[] = [];
-  activeSort = '';
+  activeSort = 'latest';
 
   constructor(private productService: ProductService) {}
 
@@ -46,6 +46,11 @@ export class CollectionPage implements OnInit {
     this.productService.getProducts(this.filters, this.activeSort).subscribe({
       next: (data) => {
         this.filteredProducts = data;
+        
+        // Ensure "latest" sort logic is strictly applied in frontend in case backend hasn't restarted with new logic
+        if (this.activeSort === 'latest') {
+          this.filteredProducts.sort((a, b) => (b.productId || 0) - (a.productId || 0));
+        }
       },
       error: (err) => console.error(err)
     });
@@ -76,6 +81,9 @@ export class CollectionPage implements OnInit {
     if (this.selectedProduct?.id) {
       this.productService.updateProduct(this.selectedProduct.id, product).subscribe({
         next: () => {
+          this.toastr.success('Product updated successfully', 'Success');
+          this.filters = { category: 'all', metalType: 'all', priceRange: 'all' };
+          this.activeSort = 'latest';
           this.loadProducts();
           this.showModal = false;
           this.selectedProduct = null;
@@ -90,6 +98,9 @@ export class CollectionPage implements OnInit {
     } else {
       this.productService.createProduct(product).subscribe({
         next: () => {
+          this.toastr.success('Product added successfully', 'Success');
+          this.filters = { category: 'all', metalType: 'all', priceRange: 'all' };
+          this.activeSort = 'latest';
           this.loadProducts();
           this.showModal = false;
           this.selectedProduct = null;
@@ -105,13 +116,12 @@ export class CollectionPage implements OnInit {
   }
 
   onApply() {
-    this.activeSort = '';
     this.loadProducts();
   }
 
   onReset() {
     this.filters = { category: 'all', metalType: 'all', priceRange: 'all' };
-    this.activeSort = '';
+    this.activeSort = 'latest';
     this.loadProducts();
   }
 
@@ -124,13 +134,14 @@ export class CollectionPage implements OnInit {
     if (this.productToDelete) {
       this.productService.deleteProduct(this.productToDelete).subscribe({
         next: () => {
+          this.toastr.success('Product deleted successfully', 'Success');
           this.loadProducts();
           this.showDeleteModal = false;
           this.productToDelete = null;
         },
         error: (err) => {
           console.error(err);
-          alert('Deletion failed!');
+          this.toastr.error('Deletion failed!', 'Error');
           this.showDeleteModal = false;
           this.productToDelete = null;
         }
