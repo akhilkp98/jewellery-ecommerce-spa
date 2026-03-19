@@ -21,7 +21,11 @@ export const errorInterceptor: HttpInterceptorFn = (req, next) => {
               toastr.warning(error.error?.message || error.error?.error || 'Bad Request', 'Warning');
               break;
             case 401:
-              toastr.error('Session expired or invalid credentials.', 'Authentication Failed');
+              if (error.error?.message === 'Invalid credentials') {
+                toastr.error('Invalid login credentials.', 'Authentication Failed');
+              } else {
+                toastr.error('Your session has expired. Please log in again.', 'Session Expired');
+              }
               authService.logout();
               break;
             case 403:

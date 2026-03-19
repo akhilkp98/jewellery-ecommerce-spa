@@ -153,4 +153,8 @@ export class CollectionPage implements OnInit {
     this.showDeleteModal = false;
     this.productToDelete = null;
   }
+
+  trackById(index: number, product: any): string {
+    return product.id;
+  }
 }

@@ -112,7 +112,7 @@
 
         <div *ngIf="filteredProducts.length > 0" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
 
-            <app-product *ngFor="let product of filteredProducts" [product]="product" (edit)="onEdit($event)"
+            <app-product *ngFor="let product of filteredProducts; trackBy: trackById" [product]="product" (edit)="onEdit($event)"
                 (delete)="confirmDelete($event)">
             </app-product>
 
