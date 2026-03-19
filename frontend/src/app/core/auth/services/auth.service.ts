@@ -4,11 +4,13 @@ import { Router } from '@angular/router';
 import { tap } from 'rxjs/operators';
 import { BehaviorSubject } from 'rxjs';
 
+import { environment } from '../../../../environments/environment';
+
 @Injectable({ providedIn: 'root' })
 export class AuthService {
   private http = inject(HttpClient);
   private router = inject(Router);
-  private apiUrl = 'http://localhost:3000/api';
+  private apiUrl = environment.apiUrl;
   
   private isLoggedInSubject = new BehaviorSubject<boolean>(this.isAuthenticated());
   isLoggedIn$ = this.isLoggedInSubject.asObservable();
