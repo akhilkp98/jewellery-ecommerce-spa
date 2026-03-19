@@ -32,6 +32,7 @@ export const getProducts = (req: Request, res: Response) => {
     if (sort === 'priceLow') filtered.sort((a, b) => a.price - b.price);
     if (sort === 'priceHigh') filtered.sort((a, b) => b.price - a.price);
     if (sort === 'nameAsc') filtered.sort((a, b) => a.name.localeCompare(b.name));
+    if (sort === 'nameDesc') filtered.sort((a, b) => b.name.localeCompare(a.name));
     if (sort === 'latest') {
       filtered.sort((a, b) => (b.productId || 0) - (a.productId || 0));
     }
