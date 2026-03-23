@@ -2,25 +2,24 @@ import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcryptjs';
 import { z } from 'zod';
+import { prisma } from '../db/prisma';
 
-const SECRET_KEY = 'LuxeJewels_Secret_Key_For_Assignment'; 
-
-const user = { 
-  id: 1, 
-  email: 'admin@test.com', 
-  password: bcrypt.hashSync('123456', 8) 
-};
+const SECRET_KEY = process.env.JWT_SECRET || 'LuxeJewels_Secret_Key_For_Assignment'; 
 
 const loginSchema = z.object({
   email: z.string().email('Invalid email format'),
   password: z.string().min(6, 'Password must be at least 6 characters')
 });
 
-export const login = (req: Request, res: Response, next: NextFunction) => {
+export const login = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const parsed = loginSchema.parse(req.body);
 
-    if (parsed.email !== user.email) {
+    const user = await prisma.user.findUnique({
+      where: { email: parsed.email }
+    });
+
+    if (!user) {
       return res.status(401).json({ message: 'Invalid credentials' });
     }
 
@@ -29,11 +28,11 @@ export const login = (req: Request, res: Response, next: NextFunction) => {
       return res.status(401).json({ message: 'Invalid credentials' });
     }
 
-    const token = jwt.sign({ id: user.id, email: user.email }, SECRET_KEY, {
+    const token = jwt.sign({ id: user.id, email: user.email, role: user.role }, SECRET_KEY, {
       expiresIn: '1h'
     });
 
-    res.json({ token, user: { email: user.email, name: 'Admin' } });
+    res.json({ token, user: { email: user.email, name: user.name, role: user.role } });
   } catch (error) {
     next(error);
   }

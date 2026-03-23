@@ -25,7 +25,7 @@ export class Header {
 
   isMenuOpen = false;
 
-  navItems = ['collections', 'orders', 'users'];
+  navItems = ['collections', 'orders', 'users', 'settings'];
 
   toggleMenu() {
     this.isMenuOpen = !this.isMenuOpen;
@@ -39,11 +39,9 @@ export class Header {
   }
 
   handleSearch() {
-    console.log('Search clicked');
   }
 
   handleCart() {
-    console.log('Cart clicked');
   }
 
   showLogoutModal = false;

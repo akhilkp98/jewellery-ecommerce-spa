@@ -12,7 +12,7 @@ export const ProductSchema = z.object({
   makingCharges: z.number().min(0, 'Making charges must be non-negative'),
   shippingCharges: z.number().min(0, 'Shipping charges must be non-negative'),
   availability: z.boolean(),
-  tax: z.enum(['GST (3%)', 'GST (5%)', 'GST (12%)']),
+  tax: z.string().min(1, 'Tax name is required'),
   image: z.string().regex(/^(https?:\/\/.*\.(?:png|jpg|jpeg|webp))$/i, 'Image must be a valid URL ending in format .png, .jpg, .jpeg, or .webp'),
   description: z.string().optional()
 });

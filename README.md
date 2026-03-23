@@ -1,68 +1,52 @@
-# Jewellery E-Commerce SPA
+# Luxe Jewels - Administration System
 
-This repository contains the source code for a full-stack Single Page Application (SPA) designed for a Jewellery E-Commerce platform. The application is built with an emphasis on responsive design, secure API architecture, and maintainable code.
+A professional, high-performance administration portal for luxury jewellery e-commerce. Built with a Service-Oriented Architecture (SOA) using **Angular 17+**, **Node.js**, **Express**, and **PostgreSQL**.
 
-## Tech Stack
-* **Frontend:** Angular 21 (Standalone Components, Tailwind CSS, Reactive Forms, `ngx-toastr` for notifications, `lucide-angular` for icons)
-* **Backend:** Node.js, Express.js, TypeScript
-* **Database:** In-Memory Database (as permitted by requirements)
-* **Validation & Security:** `zod` for strict payload validation, JWT (JSON Web Tokens) for authentication, `helmet`, and `express-rate-limit`.
+## Core Features & Architecture
 
-## Setup & Run Instructions
+### 1. Robust Data Management (Prisma + PostgreSQL)
+The system uses **Prisma ORM** for type-safe database access and automated migrations. 
+- **Soft Delete**: Products are never permanently deleted from the database. A safety flag (`isDeleted`) ensures data integrity while keeping the UI clean.
+- **Price Snapshots**: To protect historical order data, every product stores a snapshot of the metal price at the time of its last update.
 
-### Prerequisites
-* Node.js (v18 or higher recommended)
-* Angular CLI (`npm install -g @angular/cli`)
+### 2. Advanced Pricing & Tax Engine
+A dynamic calculation engine handles the complex math of jewellery pricing:
+- **Formula**: `Total = ((Weight * MetalPrice) + MakingCharges) * (1 + Tax%) + Shipping`
+- **Live Breakdown**: The product management interface provides a real-time price breakdown (Metal Value, Making, Tax, Total) as you type.
+- **Auto-Sync**: Metal rates (Gold, Silver, Platinum) are globally managed in Settings and automatically pull through to all product forms.
 
-### 1. Backend Setup
-1. Open a terminal and navigate to the backend directory:
-   ```bash
-   cd backend
-   ```
-2. Install the dependencies:
-   ```bash
-   npm install
-   ```
-3. Start the backend development server:
-   ```bash
-   npm run dev
-   ```
-   *The backend server will run securely on `http://localhost:3000`.*
+### 3. Integrated Media Handling (Cloudinary)
+- High-resolution product images are managed via **Cloudinary**.
+- Multiple images per product with a built-in carousel viewer.
+- Automatic cleanup of deleted images from cloud storage.
 
-### 2. Frontend Setup
-1. Open a new terminal and navigate to the frontend directory:
-   ```bash
-   cd frontend
-   ```
-2. Install the dependencies:
-   ```bash
-   npm install
-   ```
-3. Start the Angular development server:
-   ```bash
-   ng serve
-   ```
-   *The application will automatically compile and be accessible at `http://localhost:4200`.*
-
-### Default Admin Login
-To test the application's authenticated capabilities (adding/editing/deleting products), log in using the seeded credentials:
-- **Email:** `admin@test.com`
-- **Password:** `123456`
-
-## Core Features
-- **Responsive Grid Layout:** The UI seamlessly adapts across mobile, tablet, and desktop screens using Tailwind CSS grid layouts.
-- **Advanced Filtering & Sorting:** Users can filter inventory by metal type, category, and price range. Sorting allows users to uniquely order products by price, name, or chronological additions (`latest`).
-- **CRUD Operations:** Complete capability to Create, Read, Update, and Delete jewellery items with persistent form states and `Toastr` validations.
-- **Dynamic Price Calculation:** The backend strictly calculates the final price of an item using its weight, the real-time metal price, making charges, shipping charges, and exact tax slabs to prevent frontend tampering.
-
-## Assumptions & Design Decisions
-In developing this platform, the following design decisions and assumptions were made to prioritize User Experience (UX) and architectural stability:
-
-1. **In-Memory Database for Portability:** To keep the assignment easily reproducible and portable without requiring reviewers to provision a local MySQL database, an in-memory `product.db.ts` file acts as the primary data store. The seed data resets seamlessly upon server restart.
-2. **Simplified Tax Application:** The requirements mention "multiple taxes may apply." For a cleaner user interface and simpler UX, I assumed aggregated tax bracket strings (e.g., GST (5%), GST (12%)) rather than forcing the user to check multiple individual tax checkboxes per jewelry item. The final calculation computes exact percentages against the base price cleanly.
-3. **Price Calculation Architecture:** The Base price is calculated strictly as `(Weight * Metal Price)`. Tax is calculated purely on this base price, and then flat making + shipping charges are appended to the total. This was assumed to be the optimal mathematical flow for jewelry rate calculation.
-4. **Standalone Angular Architecture:** The frontend utilizes Angular's modern Standalone Components ecosystem (`app.routes.ts`) instead of legacy `NgModules`. This leads to much leaner files, explicit dependency imports, and easier maintainability.
-5. **Robust ID Assignments:** While generating `UUIDs` for strict identity management and API security internally, the system simultaneously assigns an auto-incrementing integer sequence (`productId`) to items. This dual-ID approach guarantees chronologically sorted displays (`latest` default logic) process in a human-readable order when filters are cleared.
+### 4. Enterprise-Grade Security & Monitoring
+- **JWT Authentication**: Secure, stateless session management with 1-hour rolling tokens.
+- **Request Logging**: Integrated `Morgan` middleware for real-time API monitoring.
+- **Persistent Error Logs**: All server-side anomalies are caught and saved to `backend/logs/error.log` with full stack traces.
 
 ---
-*Developed for the Technical Assignment - SPA.*
+
+## Setup & Installation
+
+### 1. Backend Configuration
+Create a `backend/.env` file:
+```env
+PORT=3000
+DATABASE_URL="postgresql://user:pass@localhost:5432/db?schema=public"
+JWT_SECRET="your_secure_secret_key"
+CLOUDINARY_URL="cloudinary://api_key:api_secret@cloud_name"
+```
+
+### 2. Database Initialization
+From the `/backend` directory:
+1. `npx prisma migrate dev` (Build tables)
+2. `npx ts-node src/db/seed.ts` (Seed default admin and metal rates)
+
+### 3. Running the App
+- **Backend**: `npm run dev`
+- **Frontend**: `npm run start` (Access at `http://localhost:4200`)
+
+### Default Admin Credentials
+- **Email**: `admin@test.com`
+- **Password**: `123456`

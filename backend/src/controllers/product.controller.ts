@@ -1,115 +1,83 @@
 import { Request, Response } from 'express';
-import { v4 as uuidv4 } from 'uuid';
-import { products, setProducts, Product } from '../db/product.db';
-import { ProductSchema } from '../validators/product.validator';
-import { calculatePrice } from '../utils/calculator';
+import { ProductService } from '../services/product.service';
 
-export const getProducts = (req: Request, res: Response) => {
-  const { category, metalType, priceRange, sort } = req.query;
-  
-  let filtered = [...products];
-  
-  if (category && category !== 'all') {
-    filtered = filtered.filter(p => p.category === category);
-  }
-  if (metalType && metalType !== 'all') {
-    filtered = filtered.filter(p => p.metalType === metalType);
-  }
-  if (priceRange && priceRange !== 'all') {
-    const rangeStr = priceRange as string;
-    const [minStr, maxStr] = rangeStr.split('-');
-    const min = parseInt(minStr, 10);
-    
-    if (maxStr) {
-      const max = parseInt(maxStr, 10);
-      filtered = filtered.filter(p => p.price >= min && p.price <= max);
-    } else if (rangeStr.endsWith('+')) {
-      filtered = filtered.filter(p => p.price >= min);
-    }
-  }
-
-  if (sort) {
-    if (sort === 'priceLow') filtered.sort((a, b) => a.price - b.price);
-    if (sort === 'priceHigh') filtered.sort((a, b) => b.price - a.price);
-    if (sort === 'nameAsc') filtered.sort((a, b) => a.name.localeCompare(b.name));
-    if (sort === 'nameDesc') filtered.sort((a, b) => b.name.localeCompare(a.name));
-    if (sort === 'latest') {
-      filtered.sort((a, b) => (b.productId || 0) - (a.productId || 0));
-    }
-  } else {
-    filtered.sort((a, b) => (b.productId || 0) - (a.productId || 0));
-  }
-  
-  res.json(filtered);
-};
-
-export const getProductById = (req: Request, res: Response) => {
-  const product = products.find(p => p.id === req.params.id);
-  if (!product) {
-    res.status(404).json({ error: 'Product not found' });
-    return;
-  }
-  res.json(product);
-};
-
-export const createProduct = (req: Request, res: Response) => {
+export const getProducts = async (req: Request, res: Response) => {
   try {
-    const data = ProductSchema.parse(req.body);
-    const price = calculatePrice(data.weight, data.currentMetalPrice, data.makingCharges, data.shippingCharges, data.tax);
-    
-    const newProductId = products.length > 0 ? Math.max(...products.map(p => p.productId || 0)) + 1 : 1;
-    const newProduct: Product = {
-      id: uuidv4(),
-      productId: newProductId,
-      ...data,
-      description: data.description || '',
-      price
-    };
-    
-    setProducts([...products, newProduct]);
-    res.status(201).json(newProduct);
-  } catch (error: any) {
-    res.status(400).json({ error: error.errors || 'Invalid payload' });
+    const { category, metalType, priceRange, sort } = req.query;
+    const products = await ProductService.getProducts({ category, metalType, priceRange }, sort as string);
+    res.json(products);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Failed to fetch products' });
   }
 };
 
-export const updateProduct = (req: Request, res: Response) => {
+export const getProductById = async (req: Request, res: Response) => {
   try {
-    const data = ProductSchema.parse(req.body);
-    const index = products.findIndex(p => p.id === req.params.id);
+    const product = await ProductService.getProductById(req.params.id);
+    res.json(product);
+  } catch (error: any) {
+    if (error.message === 'NOT_FOUND') {
+      return res.status(404).json({ error: 'Product not found' });
+    }
+    res.status(500).json({ error: 'Internal server error' });
+  }
+};
+
+export const createProduct = async (req: Request, res: Response) => {
+  try {
+    const data = req.body; 
     
-    if (index === -1) {
-      res.status(404).json({ error: 'Product not found' });
-      return;
+    let imageUrls: string[] = [];
+    const files = req.files as Express.Multer.File[];
+    if (files && files.length > 0) {
+      imageUrls = files.map(file => file.path); // Cloudinary secure_url returned here natively
+    } else if (req.body.image) {
+      imageUrls.push(req.body.image); // Backward compatibility logic
+    }
+
+    const imagesToCreate = imageUrls.map((url, i) => ({ url, isPrimary: i === 0 }));
+
+    const newProduct = await ProductService.createProduct(data, imagesToCreate);
+    res.status(201).json({ id: newProduct.id });
+  } catch (error: any) {
+    console.error(error);
+    if (error.message === 'INVALID_RELATIONS') {
+      return res.status(400).json({ error: 'Invalid category, metalType, or tax' });
+    }
+    res.status(400).json({ error: 'Invalid payload' });
+  }
+};
+
+export const updateProduct = async (req: Request, res: Response) => {
+  try {
+    const data = req.body;
+    const imageFiles = req.files as Express.Multer.File[];
+    
+    let deletedImageIds: string[] = [];
+    if (data.deletedImageIds) {
+      deletedImageIds = JSON.parse(data.deletedImageIds);
     }
     
-    const price = calculatePrice(data.weight, data.currentMetalPrice, data.makingCharges, data.shippingCharges, data.tax);
-    
-    const updatedProduct = {
-      ...products[index],
-      ...data,
-      description: data.description || '',
-      price
-    };
-    
-    const newProducts = [...products];
-    newProducts[index] = updatedProduct;
-    setProducts(newProducts);
-    
-    res.json(updatedProduct);
+    let newImagesToCreate;
+    if (imageFiles && imageFiles.length > 0) {
+      newImagesToCreate = imageFiles.map(f => {
+        return { url: f.path, isPrimary: false };
+      });
+    }
+
+    await ProductService.updateProduct(req.params.id, data, newImagesToCreate, deletedImageIds.length > 0 ? deletedImageIds : undefined);
+    res.json({ success: true });
   } catch (error: any) {
-    res.status(400).json({ error: error.errors || 'Invalid payload' });
+    res.status(400).json({ error: 'Invalid payload' });
   }
 };
 
-export const deleteProduct = (req: Request, res: Response) => {
-  const index = products.findIndex(p => p.id === req.params.id);
-  if (index === -1) {
+export const deleteProduct = async (req: Request, res: Response) => {
+  try {
+    await ProductService.deleteProduct(req.params.id);
+    res.status(204).send();
+  } catch (error) {
     res.status(404).json({ error: 'Product not found' });
-    return;
   }
-  
-  const newProducts = products.filter(p => p.id !== req.params.id);
-  setProducts(newProducts);
-  res.status(204).send();
 };

@@ -1,6 +1,6 @@
 import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { LucideAngularModule, Edit2, Trash2 } from 'lucide-angular';
+import { LucideAngularModule, Edit2, Trash2, ChevronLeft, ChevronRight } from 'lucide-angular';
 
 @Component({
   selector: 'app-product',
@@ -17,6 +17,24 @@ export class Product {
 
   readonly Edit2 = Edit2;
   readonly Trash2 = Trash2;
+  readonly ChevronLeft = ChevronLeft;
+  readonly ChevronRight = ChevronRight;
+
+  currentImageIndex = 0;
+
+  prevImage(event: Event) {
+    event.stopPropagation();
+    if (this.product.images?.length > 1) {
+      this.currentImageIndex = (this.currentImageIndex - 1 + this.product.images.length) % this.product.images.length;
+    }
+  }
+
+  nextImage(event: Event) {
+    event.stopPropagation();
+    if (this.product.images?.length > 1) {
+      this.currentImageIndex = (this.currentImageIndex + 1) % this.product.images.length;
+    }
+  }
 
   onEdit() {
     this.edit.emit(this.product);

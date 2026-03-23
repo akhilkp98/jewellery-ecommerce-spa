@@ -1,12 +1,40 @@
 <div class="bg-white rounded-lg shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden group">
 
-  <!-- Image -->
-  <div class="relative overflow-hidden aspect-square">
-    <img
-      [src]="product.image"
-      [alt]="product.name"
-      class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
-    />
+  <!-- Image Carousel -->
+  <div class="relative overflow-hidden aspect-square group/carousel bg-gray-50">
+    <div *ngIf="product.images?.length > 0; else fallback" class="w-full h-full relative">
+       <!-- Active Image -->
+       <img
+         [src]="product.images[currentImageIndex]?.url"
+         [alt]="product.name"
+         class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+       />
+
+       <!-- Navigation Chevrons -->
+       <button *ngIf="product.images.length > 1" (click)="prevImage($event)" class="absolute left-2 top-1/2 -translate-y-1/2 bg-white/80 p-1.5 rounded-full shadow hover:bg-white text-gray-800 opacity-0 group-hover/carousel:opacity-100 transition-opacity z-10 cursor-pointer">
+         <lucide-icon [img]="ChevronLeft" class="w-4 h-4"></lucide-icon>
+       </button>
+       <button *ngIf="product.images.length > 1" (click)="nextImage($event)" class="absolute right-2 top-1/2 -translate-y-1/2 bg-white/80 p-1.5 rounded-full shadow hover:bg-white text-gray-800 opacity-0 group-hover/carousel:opacity-100 transition-opacity z-10 cursor-pointer">
+         <lucide-icon [img]="ChevronRight" class="w-4 h-4"></lucide-icon>
+       </button>
+       
+       <!-- Dots -->
+       <div *ngIf="product.images.length > 1" class="absolute bottom-2 left-0 right-0 flex justify-center gap-1.5 z-10">
+          <div *ngFor="let img of product.images; let i = index" class="w-1.5 h-1.5 rounded-full transition-colors" [ngClass]="{'bg-[#D4AF37]': i === currentImageIndex, 'bg-white/60': i !== currentImageIndex}"></div>
+       </div>
+    </div>
+    
+    <ng-template #fallback>
+      <img
+        *ngIf="product.image"
+        [src]="product.image"
+        [alt]="product.name"
+        class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+      />
+      <div *ngIf="!product.image" class="w-full h-full flex items-center justify-center text-gray-400 bg-gray-100">
+        No Image
+      </div>
+    </ng-template>
   </div>
 
   <!-- Content -->

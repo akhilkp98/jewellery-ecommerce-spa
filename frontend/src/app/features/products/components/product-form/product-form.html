@@ -36,10 +36,7 @@
           <label class="block text-sm mb-2 font-medium">Category *</label>
           <select formControlName="category"
             class="w-full px-4 py-2 border rounded-md focus:ring-2 focus:ring-[#D4AF37] cursor-pointer">
-            <option value="rings">Rings</option>
-            <option value="necklaces">Necklaces</option>
-            <option value="earrings">Earrings</option>
-            <option value="bracelets">Bracelets</option>
+            <option *ngFor="let c of categories" [value]="c.name">{{ c.name | titlecase }}</option>
           </select>
         </div>
 
@@ -48,10 +45,7 @@
           <label class="block text-sm mb-2 font-medium">Metal Type *</label>
           <select formControlName="metalType"
             class="w-full px-4 py-2 border rounded-md focus:ring-2 focus:ring-[#D4AF37] cursor-pointer">
-            <option value="gold">Gold</option>
-            <option value="silver">Silver</option>
-            <option value="rose-gold">Rose Gold</option>
-            <option value="platinum">Platinum</option>
+            <option *ngFor="let m of metalTypes" [value]="m.name">{{ m.name | titlecase }}</option>
           </select>
         </div>
 
@@ -68,10 +62,9 @@
 
         <!-- Current Metal Price -->
         <div>
-          <label class="block text-sm mb-2 font-medium">Current metal price (per g) *</label>
-          <input type="number" formControlName="currentMetalPrice"
-            class="w-full px-4 py-2 border rounded-md focus:ring-2 focus:ring-[#D4AF37] cursor-pointer"
-            [ngClass]="{'border-red-500': f['currentMetalPrice'].invalid && f['currentMetalPrice'].touched}">
+          <label class="block text-sm mb-2 font-medium text-gray-400">Current metal price (per g) (Read Only)</label>
+          <input type="number" formControlName="currentMetalPrice" readonly
+            class="w-full px-4 py-2 border rounded-md bg-gray-100 text-gray-500 cursor-not-allowed outline-none">
         </div>
 
         <!-- Making charges -->
@@ -95,34 +88,103 @@
           <label class="block text-sm mb-2 font-medium">Tax Information *</label>
           <select formControlName="tax"
             class="w-full px-4 py-2 border rounded-md focus:ring-2 focus:ring-[#D4AF37] cursor-pointer">
-            <option value="GST (3%)">GST (3%)</option>
-            <option value="GST (5%)">GST (5%)</option>
-            <option value="GST (12%)">GST (12%)</option>
+            <option *ngFor="let t of taxes" [value]="t.name">{{ t.name }} ({{ t.rate }}%)</option>
           </select>
         </div>
 
-        <!-- Image -->
+        <!-- Image Selection -->
         <div class="md:col-span-2">
-          <label class="block text-sm mb-2 font-medium">Image URL *</label>
-          <input type="url" formControlName="image"
-            class="w-full px-4 py-2 border rounded-md focus:ring-2 focus:ring-[#D4AF37] cursor-pointer"
-            [ngClass]="{'border-red-500': f['image'].invalid && f['image'].touched}">
-          <div *ngIf="f['image'].invalid && f['image'].touched" class="text-red-500 text-xs mt-1">
-            Image URL must be valid and end in .jpg, .png, .jpeg, or .webp.
+          <label class="block text-sm mb-2 font-medium">Product Images</label>
+          
+          <div 
+            class="w-full relative border-2 border-dashed rounded-lg p-6 flex flex-col items-center justify-center transition-colors hover:bg-gray-50 focus:outline-none"
+            [ngClass]="{'border-[#D4AF37] bg-[#D4AF37]/5': isDragging, 'border-gray-300 bg-white': !isDragging}"
+            (dragover)="onDragOver($event)"
+            (dragleave)="onDragLeave($event)"
+            (drop)="onDrop($event)"
+          >
+            <!-- Native file input hidden but clickable across the entire zone -->
+            <input 
+              type="file" 
+              (change)="onFileSelected($event)" 
+              accept="image/png, image/jpeg, image/jpg, image/webp" 
+              multiple
+              class="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+              title="Click or Drag & Drop to upload images"
+            >
+            
+            <lucide-icon [img]="UploadCloud" class="w-10 h-10 text-gray-400 mb-3 pointer-events-none"></lucide-icon>
+            <p class="text-sm font-medium text-gray-700 pointer-events-none">Click or drag images here to upload</p>
+            <p class="text-xs text-gray-500 mt-1 pointer-events-none">PNG, JPG, WEBP up to 5MB each</p>
+          </div>
+
+          <!-- Image Previews -->
+          <div *ngIf="existingImages.length > 0 || selectedFiles.length > 0" class="mt-4">
+            <h4 class="text-sm font-medium text-[#0B1C2C] mb-3">Product Images</h4>
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
+               
+               <!-- Existing Images -->
+               <div *ngFor="let img of existingImages; let i = index" class="relative group aspect-square rounded-lg border border-gray-200 overflow-hidden bg-gray-50 shadow-sm">
+                 <img [src]="img.url" class="w-full h-full object-cover">
+                 <button type="button" (click)="removeExistingImage(i)" class="absolute top-1 right-1 bg-white/90 text-red-500 hover:text-red-700 hover:bg-white p-1.5 rounded-full shadow-sm opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer">
+                   <lucide-icon [img]="X" class="w-4 h-4"></lucide-icon>
+                 </button>
+                 <div class="absolute bottom-0 inset-x-0 bg-gray-800/80 text-white text-[10px] text-center tracking-wide py-1 font-medium select-none uppercase">Uploaded</div>
+               </div>
+
+               <!-- New Staged Files -->
+               <div *ngFor="let item of selectedFiles; let i = index" class="relative group aspect-square rounded-lg border border-gray-200 overflow-hidden bg-gray-50 shadow-sm border-dashed border-[#D4AF37]">
+                 <img [src]="item.previewUrl" class="w-full h-full object-cover">
+                 <button type="button" (click)="removeFile(i)" class="absolute top-1 right-1 bg-white/90 text-red-500 hover:text-red-700 hover:bg-white p-1.5 rounded-full shadow-sm opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer" title="Remove image">
+                   <lucide-icon [img]="X" class="w-4 h-4"></lucide-icon>
+                 </button>
+               </div>
+               
+            </div>
           </div>
         </div>
 
         <!-- Availability AND Price Calculation Display -->
-        <div class="md:col-span-2 flex items-center justify-between bg-gray-50 p-4 rounded-lg border">
-          <label class="relative inline-flex items-center cursor-pointer">
-            <input type="checkbox" formControlName="availability" class="sr-only peer">
-            <div class="w-11 h-6 bg-gray-300 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#D4AF37]"></div>
-            <span class="ml-3 text-sm font-medium text-gray-700">Available</span>
-          </label>
+        <div class="md:col-span-2 bg-gray-50 p-6 rounded-lg border">
+          <div class="flex flex-col md:flex-row md:items-center justify-between gap-6">
+            
+            <label class="relative inline-flex items-center cursor-pointer">
+              <input type="checkbox" formControlName="availability" class="sr-only peer">
+              <div class="w-11 h-6 bg-gray-300 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#D4AF37]"></div>
+              <span class="ml-3 text-sm font-medium text-gray-700">Available</span>
+            </label>
 
-          <div class="text-right flex items-center gap-3">
-            <span class="text-sm font-medium text-gray-500 uppercase tracking-widest">Final Price</span>
-            <span class="text-2xl font-bold text-[#D4AF37]">AED {{ calculatedPrice | number:'1.0-0' }}</span>
+            <!-- Price Breakdown -->
+            <div class="flex-1 max-w-md ml-auto">
+              <div class="space-y-1 text-sm text-gray-600 border-b pb-3 mb-2">
+                <div class="flex justify-between">
+                  <span>Metal Value ({{ productForm.get('weight')?.value }}g):</span>
+                  <span class="font-medium text-gray-900">AED {{ priceBreakdown?.metalTotal | number:'1.2-2' }}</span>
+                </div>
+                <div class="flex justify-between">
+                  <span>Making Charges:</span>
+                  <span class="font-medium text-gray-900">AED {{ priceBreakdown?.makingCharges | number:'1.2-2' }}</span>
+                </div>
+                <div class="flex justify-between text-[#D4AF37] font-medium pt-1 border-t border-dashed">
+                  <span>Taxable Amount:</span>
+                  <span>AED {{ priceBreakdown?.taxableAmount | number:'1.2-2' }}</span>
+                </div>
+                <div class="flex justify-between">
+                  <span>{{ productForm.get('tax')?.value }} (Tax):</span>
+                  <span class="font-medium text-gray-900">AED {{ priceBreakdown?.taxAmount | number:'1.2-2' }}</span>
+                </div>
+                <div class="flex justify-between">
+                  <span>Shipping:</span>
+                  <span class="font-medium text-gray-900">AED {{ priceBreakdown?.shippingCharges | number:'1.2-2' }}</span>
+                </div>
+              </div>
+              
+              <div class="flex items-center justify-between">
+                <span class="text-sm font-bold text-[#0B1C2C] uppercase tracking-widest">Grand Total</span>
+                <span class="text-3xl font-bold text-[#D4AF37]">AED {{ priceBreakdown?.total | number:'1.0-0' }}</span>
+              </div>
+            </div>
+
           </div>
         </div>
 

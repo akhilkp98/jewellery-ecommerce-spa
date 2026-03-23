@@ -1,0 +1,123 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  USER
+  ADMIN
+}
+
+enum OrderStatus {
+  PENDING
+  PAID
+  SHIPPED
+  DELIVERED
+  CANCELLED
+}
+
+model User {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  password  String
+  role      Role     @default(USER)
+  name      String?
+  orders    Order[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Category {
+  id        String    @id @default(uuid())
+  name      String    @unique
+  products  Product[]
+}
+
+model MetalType {
+  id           String    @id @default(uuid())
+  name         String    @unique // e.g., 'gold', 'silver', 'platinum', 'rose-gold'
+  pricePerGram Float
+  updatedAt    DateTime  @updatedAt
+  products     Product[]
+}
+
+model TaxConfig {
+  id        String    @id @default(uuid())
+  name      String    // e.g., 'GST (5%)'
+  rate      Float     // e.g., 5.0
+  isActive  Boolean   @default(true)
+  products  Product[]
+}
+
+model Product {
+  id              String         @id @default(uuid())
+  name            String
+  description     String?
+  weight          Float
+  makingCharges   Float
+  shippingCharges Float
+  metalPrice      Float          @default(0)
+  availability    Boolean        @default(true)
+  isDeleted       Boolean        @default(false)
+  
+  // Relations
+  categoryId      String
+  category        Category       @relation(fields: [categoryId], references: [id])
+  
+  metalTypeId     String
+  metalType       MetalType      @relation(fields: [metalTypeId], references: [id])
+  
+  taxId           String
+  tax             TaxConfig      @relation(fields: [taxId], references: [id])
+
+  images          ProductImage[]
+  orderItems      OrderItem[]
+
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+}
+
+model ProductImage {
+  id         String   @id @default(uuid())
+  url        String
+  isPrimary  Boolean  @default(false)
+  
+  productId  String
+  product    Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+}
+
+model Order {
+  id          String      @id @default(uuid())
+  finalTotal  Float
+  status      OrderStatus @default(PENDING)
+  
+  // nullable for guest checkout
+  userId      String?
+  user        User?       @relation(fields: [userId], references: [id])
+  
+  guestEmail  String?
+  guestName   String?
+  guestPhone  String?
+  shippingAddress String?
+  
+  orderItems  OrderItem[]
+  
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+}
+
+model OrderItem {
+  id              String   @id @default(uuid())
+  quantity        Int
+  priceAtPurchase Float    // The locked-in price calculation at the moment of checkout
+  
+  orderId         String
+  order           Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  
+  productId       String
+  product         Product  @relation(fields: [productId], references: [id])
+}

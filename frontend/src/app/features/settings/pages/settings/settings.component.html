@@ -1,0 +1,41 @@
+<div class="container mx-auto p-4 max-w-4xl mt-10">
+  <h1 class="text-2xl font-bold mb-6">Store Configuration</h1>
+  
+  <div class="bg-white rounded shadow p-6">
+    <h2 class="text-xl font-semibold mb-4 border-b pb-2">Tax Settings</h2>
+    
+    <div *ngIf="isLoading" class="text-gray-500">Loading taxes...</div>
+    
+    <form [formGroup]="taxForm" *ngIf="!isLoading">
+      <div formArrayName="taxes">
+        <div *ngFor="let tax of taxes.controls; let i=index" [formGroupName]="i" class="flex gap-4 items-center mb-4">
+          <div class="flex-1">
+            <label class="block text-sm font-medium text-gray-700">Tax Name</label>
+            <input type="text" formControlName="name" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 border" placeholder="e.g. GST (5%)">
+          </div>
+          
+          <div class="w-32">
+            <label class="block text-sm font-medium text-gray-700">Rate (%)</label>
+            <input type="number" formControlName="rate" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 border" placeholder="5">
+          </div>
+          
+          <div class="flex items-center mt-6">
+            <input type="checkbox" formControlName="isActive" class="h-4 w-4 text-[#D4AF37] border-gray-300 rounded focus:ring-[#D4AF37] cursor-pointer">
+            <label class="ml-2 block text-sm text-gray-900">Active</label>
+          </div>
+          
+          <div class="mt-6 flex gap-2">
+            <button *ngIf="!tax.get('id')?.value" type="button" (click)="saveTax(i)" class="bg-[#D4AF37] text-[#0B1C2C] font-medium px-4 py-1 rounded hover:bg-[#C5A028] transition-colors cursor-pointer">Save</button>
+            <button *ngIf="tax.get('id')?.value && tax.dirty" type="button" (click)="updateTaxDetails(i)" class="bg-[#D4AF37] text-[#0B1C2C] font-medium px-4 py-1 rounded hover:bg-[#C5A028] transition-colors cursor-pointer">Update</button>
+            <span *ngIf="tax.get('id')?.value && !tax.dirty" class="text-green-600 font-bold px-3 py-1 text-sm bg-green-50 rounded">Saved</span>
+            <button type="button" (click)="removeTax(i)" class="bg-red-500 text-white px-4 py-1 rounded hover:bg-red-600 transition-colors cursor-pointer">Remove</button>
+          </div>
+        </div>
+      </div>
+      
+      <button type="button" (click)="addTax()" class="mt-4 border-2 border-dashed border-gray-300 text-[#0B1C2C] font-medium py-2 px-4 rounded w-full hover:border-[#D4AF37] hover:text-[#D4AF37] transition-colors cursor-pointer">
+        + Add New Tax Slab
+      </button>
+    </form>
+  </div>
+</div>
